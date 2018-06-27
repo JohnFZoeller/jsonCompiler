@@ -9,5 +9,6 @@ if __name__ == '__main__':
 	else:
 		lexer = Lexer(sys.argv[1])
 		syntax_parser = SyntaxParser(lexer)
+		syntax_parser.parse()
 
 	
