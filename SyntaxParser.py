@@ -37,7 +37,8 @@ class SyntaxParser(object):
 
 		#temp
 		print(self.__token)
-		sys.exit(1) if self.__token.value() == "endTest" else None
+		if self.__token.value() == "endTest":
+			sys.exit(0)
 		#temp
 
 		if self.__token.type() == expect:
@@ -56,6 +57,8 @@ class SyntaxParser(object):
 			return StringNode(self.__token)
 		elif type == Token.Token_Type.BOOL:
 			return BoolNode(self.__token)
+		elif type == Token.Token_Type.NULL:
+			return NullNode(self.__token)
 		else:
 			return None
 
@@ -64,10 +67,17 @@ class SyntaxParser(object):
 		return self.__token.value() != '}'
 		pass
 
+	def __has_elements(self):
+		return self.__token.value() != ']'
+		pass
+
 	def __has_more_members(self):
 		return self.__token.value() == ','
 		pass
 
+	def __is_basic_type(self, type):
+		return (type != Token.Token_Type.OBJECT and
+						type != Token.Token_Type.OPERATOR)
 
 	"""RULES"""
 	def __Object(self):
@@ -106,9 +116,34 @@ class SyntaxParser(object):
 		self.__match_operator(':')
 
 		value_type = self.__token.type()
-		self.__match(value_type)
+
+		if self.__is_basic_type(value_type):
+			self.__match(value_type)
+		else:
+			self.__Object()
 
 		self.__curr_node = temp_mems_node
+
+	def __Array(self):
+		self.__match_operator('[')
+		array_node = ArrayNode()
+		temp_pair_node = self.__curr_node
+		self.__curr_node = array_node
+
+		if self.__has_elements():
+			self.__Elements()
+
+		self.__curr_node = temp_pair_node
+		self.__curr_node.add_child(array_node)
+		self.__match_operator(']')
+
+	def __Elements(self):
+		elems_node = ElementsNode()
+		temp_node = self.__curr_node
+		self.__curr_node = elems_node
+
+		pass
+
 
 
 
