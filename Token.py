@@ -23,4 +23,6 @@ class Token(object):
 	def value(self):
 		return self.__value
 
+	def is_eof(self):
+		return self.__type == self.Token_Type.EOF
 

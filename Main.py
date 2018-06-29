@@ -10,5 +10,6 @@ if __name__ == '__main__':
 		lexer = Lexer(sys.argv[1])
 		syntax_parser = SyntaxParser(lexer)
 		syntax_parser.parse()
+		syntax_parser.decorate_AST()
 
 	

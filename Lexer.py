@@ -19,7 +19,7 @@ class Lexer(object):
 				self.__set_curr_char()
 			self.__eat_whitespace()
 		except EOFError:
-			return None
+			return Token(Token.Token_Type.EOF, 'x')
 
 		self.__file_readable = True
 

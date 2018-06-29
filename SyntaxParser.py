@@ -1,7 +1,20 @@
 from Token import Token
 from HeteroAST import *
+from Scope import Scope
+from Symbol import *
 import sys
 
+class SymbolTable(object):
+	def __init__(self):
+		self.global_scope = Scope("global")
+
+		self.global_scope.build_global( [ 
+			BuiltInTypeSymbol("String"), BuiltInTypeSymbol("Int"), 
+			BuiltInTypeSymbol("Bool"), BuiltInTypeSymbol("Null"),
+			ArraySymbol("Array") ] )
+
+		self.global_scope.define(ObjectSymbol("Object",
+			self.global_scope))
 
 class SyntaxParser(object):
 	def __init__(self, lexer):
@@ -11,10 +24,9 @@ class SyntaxParser(object):
 		self.__curr_node = self.__root
 
 	def parse(self):
-		#while self.__token != None:
-		while self.__token.value() != "endTest":
+		while not self.__token.is_eof():
 			if self.__token.type() == Token.Token_Type.COMMAND:
-				pass
+				self.__Command()
 			elif (self.__token.type() == Token.Token_Type.OPERATOR
 				and self.__token.value() == '{'):
 				self.__Object()
@@ -22,9 +34,14 @@ class SyntaxParser(object):
 				raise ValueError('Unexpected Token: ' + 
 					self.__token.value())
 
+		self.__root.print('+')
+
+	def decorate_AST(self):
+		global_symbol_table = SymbolTable()
+		self.__root.define_declarations(global_symbol_table)
+
 	"""HELPERS"""
 	def __match_operator(self, expect):
-		print(self.__token)
 		if self.__token.value() == expect:
 			self.__set_token()
 		else:
@@ -34,12 +51,6 @@ class SyntaxParser(object):
 	def __match(self, expect):
 		value_node = self.__get_value_node(expect)
 		self.__curr_node.add_child(value_node)
-
-		#temp
-		print(self.__token)
-		if self.__token.value() == "endTest":
-			sys.exit(0)
-		#temp
 
 		if self.__token.type() == expect:
 			self.__set_token()
@@ -59,6 +70,8 @@ class SyntaxParser(object):
 			return BoolNode(self.__token)
 		elif type == Token.Token_Type.NULL:
 			return NullNode(self.__token)
+		elif type == Token.Token_Type.COMMAND:
+			return CommandNode(self.__token)
 		else:
 			return None
 
@@ -116,13 +129,15 @@ class SyntaxParser(object):
 		self.__match_operator(':')
 
 		value_type = self.__token.type()
+		operator = self.__token.value()
 
 		if self.__is_basic_type(value_type):
 			self.__match(value_type)
 		else:
-			self.__Object()
+			self.__Object() if operator == '{' else self.__Array()
 
 		self.__curr_node = temp_mems_node
+		self.__curr_node.add_child(pair_node)
 
 	def __Array(self):
 		self.__match_operator('[')
@@ -142,7 +157,36 @@ class SyntaxParser(object):
 		temp_node = self.__curr_node
 		self.__curr_node = elems_node
 
-		pass
+		value_type = self.__token.type()
+		operator = self.__token.value()
+
+		if self.__is_basic_type(value_type):
+			self.__match(value_type)
+		else:
+			self.__Object() if operator == '{' else self.__Array()
+
+		while self.__has_more_members():
+			self.__match_operator(',')
+			self.__Elements()
+
+		self.__curr_node = temp_node
+		self.__curr_node.add_child(elems_node)
+
+	def __Command(self):
+		cmd_node = CommandNode(None)
+		temp_node = self.__curr_node
+		self.__curr_node = cmd_node
+
+		self.__match(Token.Token_Type.COMMAND)
+
+		if self.__token.value() == '.':
+			self.__match_operator('.')
+			self.__Command()
+
+		self.__curr_node = temp_node
+		self.__curr_node.add_child(cmd_node)
+
+
 
 
 
