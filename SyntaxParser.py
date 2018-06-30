@@ -7,12 +7,13 @@ import sys
 class SymbolTable(object):
 	def __init__(self):
 		self.global_scope = Scope("global")
-
-		self.global_scope.build_global( [ 
-			BuiltInTypeSymbol("String"), BuiltInTypeSymbol("Int"), 
-			BuiltInTypeSymbol("Bool"), BuiltInTypeSymbol("Null"),
-			ArraySymbol("Array") ] )
-
+		self.global_scope.build_global([ 
+			BuiltInTypeSymbol("String"), 
+			BuiltInTypeSymbol("Int"), 
+			BuiltInTypeSymbol("Bool"), 
+			BuiltInTypeSymbol("Null"),
+			ArraySymbol("Array") 
+		])
 		self.global_scope.define(ObjectSymbol("Object",
 			self.global_scope))
 

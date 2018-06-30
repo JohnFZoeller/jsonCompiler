@@ -13,7 +13,7 @@ class Scope(object):
 		self.__symbols[symbol.name()] = symbol
 
 	def resolve(self, symbol_name):
-		resolved_symbol = symbols.get(symbol_name)
+		resolved_symbol = self.__symbols.get(symbol_name)
 
 		if resolved_symbol:
 			return resolved_symbol
