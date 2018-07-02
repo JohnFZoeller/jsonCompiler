@@ -71,18 +71,17 @@ class PairNode(HeteroAST):
 
 	def _declare(self, enclosing_scope):
 		self._scope = enclosing_scope
-		string_node, value_node = 0, 1
+		key_node, val_node = 0, 1
 
-		key = self._children[string_node]._token.value()
-		scope_of_key = Scope(self._name_scope(key), self._scope)
+		key_symbol = self._children[key_node]._declare(self._scope, True)
+		val_symbol = self._children[val_node]._declare(self._scope)
+		key_name, key_type = key_symbol.name(), key_symbol.type()
 
-		k = self._children[string_node]._declare(self._scope)
-		v = self._children[value_node]._declare(scope_of_key)
-		k.attach_value(v)
+		# print("SCOPE: " + str(self._scope.scope_name()))
+		# print('\t' + str(key_symbol) + '\n\t' + str(val_symbol))
 
-	def _name_scope(self, key_name):
-		return str(self._scope.scope_name()) + " : " + key_name
-		pass
+		self._symbol = KeyValueSymbol(key_name, key_type, val_symbol)
+		self._scope.define(self._symbol)
 
 class ArrayNode(HeteroAST):
 	def __init__(self):
@@ -116,36 +115,46 @@ class ValueNode(HeteroAST):
 	def __init__(self, token):
 		super(ValueNode, self).__init__(token)
 
+class BuiltInTypeNode(ValueNode):
+	def __init__(self, token):
+		super(BuiltInTypeNode, self).__init__(token)
+
 	def _declare(self, enclosing_scope):
 		self._scope = enclosing_scope
-		token_name = self._token.value()
-		token_type = self._token.type().name
-		symbol = self._scope.resolve(token_name)
+		value = self._token.value()
+		type = self._scope.resolve(self._token.type().name)
+		self._symbol = Symbol(value, type)
+		return self._symbol
 
-		if symbol == None:
-			symbol_type = self._scope.resolve(token_type)
-			symbol = Symbol(token_name, token_type)
-		else:
-			print("PREVIOUSLY DEFINED")
-		
-		print("SCOPE: " + str(self._scope.scope_name()))
-		print('\t' + str(symbol))
-		self._scope.define(symbol)
-		return symbol
-
-class StringNode(ValueNode):
+class StringNode(BuiltInTypeNode):
 	def __init__(self, token):
 		super(StringNode, self).__init__(token)
 
-class IntNode(ValueNode):
+	def _declare(self, enclosing_scope, is_key = False):
+		self._scope = enclosing_scope
+		token_name = self._token.value()
+		token_type = self._token.type().name
+		symbol_type = self._scope.resolve(token_type)
+
+		if is_key:
+			self._symbol = self._scope.resolve(token_name)
+
+			if self._symbol != None:
+				raise ValueError('Symbol Already Defined')
+
+		self._symbol = Symbol(token_name, symbol_type)
+
+		return self._symbol
+
+class IntNode(BuiltInTypeNode):
 	def __init__(self, token):
 		super(IntNode, self).__init__(token)
 
-class BoolNode(ValueNode):
+class BoolNode(BuiltInTypeNode):
 	def __init__(self, token):
 		super(BoolNode, self).__init__(token)
 
-class NullNode(ValueNode):
+class NullNode(BuiltInTypeNode):
 	def __init__(self, token):
 		super(NullNode, self).__init__(token)
 
@@ -158,23 +167,21 @@ class CommandNode(ValueNode):
 		self._scope = enclosing_scope
 		cmd_node, nested_cmd = 0, 1
 		cmd_name = self._children[cmd_node]._token.value()
-		print(cmd_name)
-		print(self._scope)
 
 		if self._scope.contains_objects():
-			object_scoped_symbol = self._scope.peek_object()
-			self._symbol = object_scoped_symbol.resolve(cmd_name)
-
-		if self._symbol:
-			if self._has_two_children():
-				self._children[nested_cmd]._declare(object_scoped_symbol)
-				pass
+			#retreive new scope
+			self._scope = self._scope.peek_object()
+			self._symbol = self._scope.resolve(cmd_name)
+			#print(str(self._scope) + "\n" + str(self._symbol))
+			if self._symbol:
+				if self._has_two_children():
+					self._children[nested_cmd]._declare(self._scope)
+				else:
+					print("Result: " + str(self._symbol.get().name()))
 			else:
-				print(self._symbol.get_value_symbol())
-				pass
+				print("Failed to resolve: " + str(cmd_name))
 		else:
-			print("No such Key")
-
+			print("STORAGE ERROR")
 
 
 

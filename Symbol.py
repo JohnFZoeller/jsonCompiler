@@ -4,7 +4,6 @@ class Symbol(object):
 	def __init__(self, name = None, s_type = None):
 		self.__name = name if name else id(self)
 		self.__type = s_type
-		self.__value_symbol = None
 
 	def __str__(self):
 		return ("Name: " + str(self.__name) + " Type: "+
@@ -19,17 +18,17 @@ class Symbol(object):
 	def is_object(self):
 		return False
 
-	def attach_value(self, attachment):
-		self.__value_symbol = attachment
-		pass
-
-	def get_value_symbol(self):
-		return self.__value_symbol
-		pass
+	def get(self):
+		return None
 
 class BuiltInTypeSymbol(Symbol):
 	def __init__(self, name):
-		super(BuiltInTypeSymbol, self).__init__(name) 
+		super(BuiltInTypeSymbol, self).__init__(name, 
+			self.__class__)
+
+	def __str__(self):
+		return "BuiltIn(" + str(self.name()) + ")"
+		
 
 class ObjectSymbol(Symbol, Scope):
 	def __init__(self, enclosing_scope):
@@ -47,3 +46,13 @@ class ObjectSymbol(Symbol, Scope):
 class ArraySymbol(Symbol):
 	def __init__(self):
 		super(ArraySymbol, self).__init__()
+
+class KeyValueSymbol(Symbol):
+	def __init__(self, name, type, value_symbol):
+		super(KeyValueSymbol, self).__init__(name, type)
+		self.__value_symbol = value_symbol
+
+	def get(self):
+		return self.__value_symbol
+
+
