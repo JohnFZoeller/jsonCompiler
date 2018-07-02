@@ -178,8 +178,7 @@ class SyntaxParser(object):
 		self.__match(Token.Token_Type.COMMAND)
 
 		if self.__token.value() == '[':
-			self.__match_operator('[')
-			
+			self.__ArrayAccess()
 
 		if self.__token.value() == '.':
 			self.__match_operator('.')
@@ -189,6 +188,17 @@ class SyntaxParser(object):
 		self.__curr_node.add_child(cmd_node)
 
 
+	def _ArrayAccess(self):
+		int_node = IntNode(None)
+		temp_node = self.__curr_node
+		self.__curr_node = int_node
+		
+		self.__match_operator('[')
+		self.__match(Token.Token_Type.INT)
+		self.__match_operator(']')
+
+		self.__curr_node = temp_node
+		self.__curr_node.add_child(int_node)
 
 
 
