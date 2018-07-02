@@ -6,16 +6,13 @@ import sys
 
 class SymbolTable(object):
 	def __init__(self):
-		self.global_scope = Scope("global")
+		self.global_scope = Scope("GLOBAL")
 		self.global_scope.build_global([ 
-			BuiltInTypeSymbol("String"), 
-			BuiltInTypeSymbol("Int"), 
-			BuiltInTypeSymbol("Bool"), 
-			BuiltInTypeSymbol("Null"),
-			ArraySymbol("Array") 
+			BuiltInTypeSymbol("STRING"), 
+			BuiltInTypeSymbol("INT"), 
+			BuiltInTypeSymbol("BOOL"), 
+			BuiltInTypeSymbol("NULL"),
 		])
-		self.global_scope.define(ObjectSymbol("Object",
-			self.global_scope))
 
 class SyntaxParser(object):
 	def __init__(self, lexer):
