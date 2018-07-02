@@ -76,8 +76,9 @@ class PairNode(HeteroAST):
 		key = self._children[string_node]._token.value()
 		scope_of_key = Scope(self._name_scope(key), self._scope)
 
-		self._children[string_node]._declare(self._scope)
-		self._children[value_node]._declare(scope_of_key)
+		k = self._children[string_node]._declare(self._scope)
+		v = self._children[value_node]._declare(scope_of_key)
+		k.attach_value(v)
 
 	def _name_scope(self, key_name):
 		return str(self._scope.scope_name()) + " : " + key_name
@@ -130,7 +131,7 @@ class ValueNode(HeteroAST):
 		print("SCOPE: " + str(self._scope.scope_name()))
 		print('\t' + str(symbol))
 		self._scope.define(symbol)
-		return symbol.name()
+		return symbol
 
 class StringNode(ValueNode):
 	def __init__(self, token):
@@ -157,20 +158,22 @@ class CommandNode(ValueNode):
 		self._scope = enclosing_scope
 		cmd_node, nested_cmd = 0, 1
 		cmd_name = self._children[cmd_node]._token.value()
+		print(cmd_name)
+		print(self._scope)
 
 		if self._scope.contains_objects():
 			object_scoped_symbol = self._scope.peek_object()
 			self._symbol = object_scoped_symbol.resolve(cmd_name)
 
-			if self._symbol:
-				if self._has_two_children():
-					pass
-					#self._children[nested_cmd]._declare()
-				else:
-					pass
-				print(self._symbol)
+		if self._symbol:
+			if self._has_two_children():
+				self._children[nested_cmd]._declare(object_scoped_symbol)
+				pass
 			else:
-				print("No such Key")
+				print(self._symbol.get_value_symbol())
+				pass
+		else:
+			print("No such Key")
 
 
 

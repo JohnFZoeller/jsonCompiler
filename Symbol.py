@@ -4,6 +4,7 @@ class Symbol(object):
 	def __init__(self, name = None, s_type = None):
 		self.__name = name if name else id(self)
 		self.__type = s_type
+		self.__value_symbol = None
 
 	def __str__(self):
 		return ("Name: " + str(self.__name) + " Type: "+
@@ -17,6 +18,14 @@ class Symbol(object):
 
 	def is_object(self):
 		return False
+
+	def attach_value(self, attachment):
+		self.__value_symbol = attachment
+		pass
+
+	def get_value_symbol(self):
+		return self.__value_symbol
+		pass
 
 class BuiltInTypeSymbol(Symbol):
 	def __init__(self, name):
