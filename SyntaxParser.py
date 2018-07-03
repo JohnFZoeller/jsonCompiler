@@ -189,15 +189,9 @@ class SyntaxParser(object):
 
 
 	def _ArrayAccess(self):
-		int_node = IntNode(None)
-		temp_node = self.__curr_node
-		self.__curr_node = int_node
-		
 		self.__match_operator('[')
 		self.__match(Token.Token_Type.INT)
 		self.__match_operator(']')
-
-		self.__curr_node = temp_node
 		self.__curr_node.add_child(int_node)
 
 

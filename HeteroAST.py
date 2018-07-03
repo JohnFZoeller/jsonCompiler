@@ -175,7 +175,8 @@ class CommandNode(ValueNode):
 			#print(str(self._scope) + "\n" + str(self._symbol))
 			if self._symbol:
 				if self._has_two_children():
-					self._children[nested_cmd]._declare(self._scope)
+					s = self._children[nested_cmd]._declare(self._scope)
+					#if s is int
 				else:
 					print("Result: " + str(self._symbol.get().name()))
 			else:
