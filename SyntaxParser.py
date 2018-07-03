@@ -32,7 +32,7 @@ class SyntaxParser(object):
 				raise ValueError('Unexpected Token: ' + 
 					self.__token.value())
 
-		#self.__root.print('+')
+		#self.__root.print_tree('+')
 
 	def decorate_AST(self):
 		global_symbol_table = SymbolTable()

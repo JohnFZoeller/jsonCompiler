@@ -44,7 +44,7 @@ class Lexer(object):
 		return Token(Token.Token_Type.STRING, value) 
 
 	def __word(self):
-		value = ""
+		value = u""
 		self.__file_readable = False
 
 		while self.__curr_char.isalnum():

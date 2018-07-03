@@ -14,12 +14,12 @@ class HeteroAST(object):
 		self._children.append(tree_node)
 		pass
 
-	def print(self, level):
-		print(level + self.__class__.__name__)
+	def print_tree(self, level):
+		#print(level + self.__class__.__name__)
 
 		for c in self._children:
 			if c._token == None:
-				c.print(level + '++')
+				c.print_tree(level + '++')
 			else:
 				print(level + str(c._token))
 
