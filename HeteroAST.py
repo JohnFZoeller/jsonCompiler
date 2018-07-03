@@ -35,7 +35,7 @@ class HeteroAST(object):
 		return len(self._children) > 0
 		pass
 
-	def _has_two_children(self):
+	def _has_more_children(self):
 		return len(self._children) == 2
 		pass
 
@@ -62,7 +62,7 @@ class MembersNode(HeteroAST):
 
 		self._children[pair_node]._declare(self._scope)
 
-		if self._has_two_children():
+		if self._has_more_children():
 			self._children[mems_node]._declare(self._scope)
 
 class PairNode(HeteroAST):
@@ -93,22 +93,25 @@ class ArrayNode(HeteroAST):
 		elems_node = 0
 
 		if self._has_children():
-			self._children[elems_node]._declare(self._scope)
+			self._children[elems_node]._declare(self._scope,
+																					self._symbol)
 
-		self._scope.define(self._symbol)
+		return self._symbol
 
 class ElementsNode(HeteroAST):
 	def __init__(self):
 		super(ElementsNode, self).__init__()
 
-	def _declare(self, enclosing_scope):
+	def _declare(self, enclosing_scope, array_symbol):
 		self._scope = enclosing_scope
 		value_node, elems_node = 0, 1
 
-		self._children[value_node]._declare(self._scope)
+		elem = self._children[value_node]._declare(self._scope)
+		array_symbol.append(elem)
 
-		if self._has_two_children():
-			self._children[elems_node]._declare(self._scope)
+		if self._has_more_children():
+			self._children[elems_node]._declare(self._scope,
+																					array_symbol)
 
 
 class ValueNode(HeteroAST):
@@ -165,28 +168,33 @@ class CommandNode(ValueNode):
 
 	def _declare(self, enclosing_scope):
 		self._scope = enclosing_scope
-		cmd_node, nested_cmd = 0, 1
+		cmd_node = 0
 		cmd_name = self._children[cmd_node]._token.value()
 
 		if self._scope.contains_objects():
-			#retreive new scope
 			self._scope = self._scope.peek_object()
 			self._symbol = self._scope.resolve(cmd_name)
-			#print(str(self._scope) + "\n" + str(self._symbol))
+
 			if self._symbol:
-				if self._has_two_children():
-					s = self._children[nested_cmd]._declare(self._scope)
-					#if s is int
-				else:
+				for i in range(1, len(self._children)):
+					int_symbol = self._children[i]._declare(self._scope)
+
+					if int_symbol:
+						self.__get_array_element(self._symbol, 
+																		 int_symbol.name())
+
+				if len(self._children) == 1:
 					print("Result: " + str(self._symbol.get().name()))
 			else:
 				print("Failed to resolve: " + str(cmd_name))
+
 		else:
-			print("STORAGE ERROR")
+			print("Scope Storage Error")
 
 
-
-
+	def __get_array_element(self, key_value_symbol, idx):
+		print("Result: " + str(key_value_symbol.get().
+					get_array_element(idx).name()))
 
 
 

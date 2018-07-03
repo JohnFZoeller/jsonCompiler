@@ -46,6 +46,23 @@ class ObjectSymbol(Symbol, Scope):
 class ArraySymbol(Symbol):
 	def __init__(self):
 		super(ArraySymbol, self).__init__()
+		self.__size = 0
+		self.__elements = list()
+
+	def __str__(self):
+		result = ""
+		for e in self.__elements:
+			result += str(e) + ', '
+		return result
+
+	def append(self, symbol):
+		self.__elements.append(symbol)
+		self.__size += 1
+
+	def get_array_element(self, idx):
+		return self.__elements[int(idx)]
+
+
 
 class KeyValueSymbol(Symbol):
 	def __init__(self, name, type, value_symbol):

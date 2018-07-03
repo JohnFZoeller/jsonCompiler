@@ -188,11 +188,10 @@ class SyntaxParser(object):
 		self.__curr_node.add_child(cmd_node)
 
 
-	def _ArrayAccess(self):
+	def __ArrayAccess(self):
 		self.__match_operator('[')
 		self.__match(Token.Token_Type.INT)
 		self.__match_operator(']')
-		self.__curr_node.add_child(int_node)
 
 
 
