@@ -39,6 +39,13 @@ class tokenData(object):
 		self.__token = token
 		self.__is_paired = false
 
+def co_occurrence(desired_tokens, token_stream):
+	word_count_map, co_oc_map = {}, {}
+
+	build_maps(word_count_map, co_oc_map, token_stream)
+	#pprint.pprint(word_count_map, width = 1)
+	save_co_ocs(desired_tokens, word_count_map, co_oc_map)
+
 def build_maps(word_count, co_oc_map, token_stream):
 	token = token_stream.get_next_token()
 	token_data_map = {}
@@ -50,21 +57,14 @@ def build_maps(word_count, co_oc_map, token_stream):
 		token_data_map[token] = token_data_map.get(token, set())
 
 		queue.enqueue(token).enforce()
-		
+		parse_tokens_queue(queue, word_count, token_data_map)
 
 		token = token_stream.get_next_token()
 
 	print(token_data_map)
 
+def parse_tokens_queue(q, w, t):
+	
+
 def save_co_ocs(desired_tokens, word_count, co_oc):
 	pass
-
-def co_occurrence(desired_tokens, token_stream):
-	word_count_map, co_oc_map = {}, {}
-
-	build_maps(word_count_map, co_oc_map, token_stream)
-	#pprint.pprint(word_count_map, width = 1)
-	save_co_ocs(desired_tokens, word_count_map, co_oc_map)
-
-
-
