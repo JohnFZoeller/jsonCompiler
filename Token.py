@@ -10,9 +10,23 @@ class Token(object):
 		self.__type = token_type
 		self.__value = value
 
-	def __str__(self):
+	#replaces str
+	def __repr__(self):
 		typeName = self.Token_Type(self.__type.value).name
 		return "[" + typeName + "] -> " + self.__value + ""
+
+	def __eq__(self, other):
+		if self.__type != Token.Token_Type.OPERATOR:
+			return True
+		return ((self.__type, self.__value) ==
+					 (other.__type, other.__value))
+
+	def __hash__(self):
+		hash_tuple = ((self.__type) 
+			if self.__type != self.Token_Type.OPERATOR 
+			else (self.__type, self.__value))
+
+		return hash(hash_tuple)
 
 	def copy(self):
 		return Token(self.__type, self.__value)
