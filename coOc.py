@@ -2,14 +2,20 @@
 from Token import Token
 import sys, pprint
 
-K, MaxWindow = 3, 4
+#co-occurrence window
+K = 3
 
 class Queue:
-	def __init__(self):
+	def __init__(self, max_size):
 		self.queue = list()
+		self.max_size = max_size
+
+	def __str__(self):
+		return str(self.queue)
 
 	def enqueue(self, token):
 		self.queue.insert(0, token)
+		return self
 
 	def dequeue(self):
 		return self.queue.pop()
@@ -23,31 +29,42 @@ class Queue:
 	def isEmpty(self):
 		return self.queue == []
 
+	def enforce(self):
+		if self.size() > self.max_size:
+			self.dequeue()
+
 class tokenData(object):
 	def __init__(self, token = None):
 		self.__count = 1
 		self.__token = token
 		self.__is_paired = false
 
-def build_maps(word_count, co_oc, token_stream):
+def build_maps(word_count, co_oc_map, token_stream):
 	token = token_stream.get_next_token()
 	token_data_map = {}
-	queue = Queue()
-	print("called")
+	queue = Queue(K + 1)
+
 	while not token.is_eof():
 		word_count[token] = word_count.get(token, 0) + 1
+		co_oc_map[token] = co_oc_map.get(token, dict())
+		token_data_map[token] = token_data_map.get(token, set())
 
+		queue.enqueue(token).enforce()
+		
 
 		token = token_stream.get_next_token()
 
+	print(token_data_map)
+
+def save_co_ocs(desired_tokens, word_count, co_oc):
+	pass
 
 def co_occurrence(desired_tokens, token_stream):
 	word_count_map, co_oc_map = {}, {}
 
 	build_maps(word_count_map, co_oc_map, token_stream)
 	#pprint.pprint(word_count_map, width = 1)
-
-	print(sys.argv)
+	save_co_ocs(desired_tokens, word_count_map, co_oc_map)
 
 
 
