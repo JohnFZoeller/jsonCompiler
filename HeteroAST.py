@@ -6,7 +6,7 @@ from Symbol import *
 class HeteroAST(object):
 	def __init__(self, token = None):
 		self._children = list()
-		self._token = token.copy() if token != None else None
+		self._token = token.copy() if token else None
 		self._scope = None
 		self._symbol = None
 
