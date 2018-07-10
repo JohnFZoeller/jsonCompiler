@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 from Token import Token
 import sys, pprint
+#ALL CONSTS SHOULD BE ALL CAPS WITH UNDERSCORES
 
 #co-occurrence window
 K = 3
 
+
 class Queue:
+	"""
+	Maximum Size Queue class built with a list. Built 
+	backwards. The END of the list is the FIRST in line for the 
+	queue. The begging of the list is the back of the queue.  
+	Therefore, to peek, look at the last list element. 
+	To pop, look at the last element.
+	To insert, emplace into the first elemnt
+	"""
 	def __init__(self, max_size):
 		self.queue = list()
 		self.max_size = max_size
@@ -33,38 +43,73 @@ class Queue:
 		if self.size() > self.max_size:
 			self.dequeue()
 
-class tokenData(object):
+class TokenData(object):
 	def __init__(self, token = None):
 		self.__count = 1
 		self.__token = token
 		self.__is_paired = false
 
 def co_occurrence(desired_tokens, token_stream):
-	word_count_map, co_oc_map = {}, {}
+	map_word_count, map_co_oc = {}, {}
 
-	build_maps(word_count_map, co_oc_map, token_stream)
-	#pprint.pprint(word_count_map, width = 1)
-	save_co_ocs(desired_tokens, word_count_map, co_oc_map)
+	build_maps(map_word_count, map_co_oc, token_stream)
+	save_co_ocs(desired_tokens, map_word_count, map_co_oc)
 
-def build_maps(word_count, co_oc_map, token_stream):
+def build_maps(map_word_count, map_co_oc, token_stream):
 	token = token_stream.get_next_token()
-	token_data_map = {}
 	queue = Queue(K + 1)
 
 	while not token.is_eof():
-		word_count[token] = word_count.get(token, 0) + 1
-		co_oc_map[token] = co_oc_map.get(token, dict())
-		token_data_map[token] = token_data_map.get(token, set())
+		map_word_count[token] = map_word_count.get(token, 0) + 1
+		map_co_oc[token] = map_co_oc.get(token, dict())					#get(value, default)
 
+		parse_tokens_queue(token, queue, map_word_count, map_co_oc)
 		queue.enqueue(token).enforce()
-		parse_tokens_queue(queue, word_count, token_data_map)
-
 		token = token_stream.get_next_token()
 
-	print(token_data_map)
+def parse_tokens_queue(token, q, map_word_count, map_co_oc):
 
-def parse_tokens_queue(q, w, t):
-	
+	for token_iter in q.queue: 
+		current_token_count = iter_token_count = 0
 
-def save_co_ocs(desired_tokens, word_count, co_oc):
-	pass
+		if token in map_co_oc[token_iter]:
+			current_token_count = map_co_oc[token_iter][token]
+		if token_iter in map_co_oc[token]:
+			iter_token_count = map_co_oc[token][token_iter]
+		if map_word_count[token_iter] > map_word_count[token]:
+			map_co_oc[token_iter][token] = current_token_count + 1
+			map_co_oc[token][token_iter] = iter_token_count + 1
+
+def save_co_ocs(desired_tokens, map_word_count, map_co_oc):
+	#pprint.pprint(map_co_oc, width = 1)
+
+	token_left = desired_tokens.get_next_token()
+	token_right = desired_tokens.get_next_token()
+	count_numerator = count_denominator = 0
+
+	while not token_right.is_eof():
+		count_denominator = map_word_count[token_left]
+		count_numerator = map_co_oc[token_left][token_right]
+
+
+		print(str(token_left) + str(token_right) + 
+			str(count_numerator / count_denominator))
+
+		token_left = desired_tokens.get_next_token()
+		token_right = desired_tokens.get_next_token()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

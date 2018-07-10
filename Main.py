@@ -8,9 +8,9 @@ def update_co_occurrence():
 	if len(sys.argv) != 3:
 		print('No Co-Occurrence input')
 	else:
-		desired_tokens = Lexer(sys.argv[2])
+		tokens_desired = Lexer(sys.argv[2])
 		token_stream = Lexer(sys.argv[1])
-		co_occurrence(desired_tokens, token_stream)
+		co_occurrence(tokens_desired, token_stream)
 
 if __name__ == '__main__':
 	if len(sys.argv) < 2:
