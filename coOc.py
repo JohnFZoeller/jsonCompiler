@@ -91,9 +91,8 @@ def save_co_ocs(desired_tokens, map_word_count, map_co_oc):
 		count_denominator = map_word_count[token_left]
 		count_numerator = map_co_oc[token_left][token_right]
 
-
-		print(str(token_left) + str(token_right) + 
-			str(count_numerator / count_denominator))
+		print(str(token_left) + '\n' + str(token_right) + '\t' +
+			str(count_numerator / count_denominator) + '\n')
 
 		token_left = desired_tokens.get_next_token()
 		token_right = desired_tokens.get_next_token()
