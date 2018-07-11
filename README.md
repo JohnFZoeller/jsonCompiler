@@ -4,9 +4,9 @@ A basic JavaScript Object Notation Parser with a co-occurence algorithm.
 ## Input language
 This parser requires that the input be in the following 2 formats:
 
-	- A JSON or a collection of JSONs.  These can be flat, like so:
+- A JSON or a collection of JSONs.  These can be flat, like so:
 		{"key":"value","key2":[1, 2]}
-	- Or they can be formatted:
+- Or they can be formatted:
 		{
 			"john":"zoeller",
 			"apples" {
@@ -15,16 +15,16 @@ This parser requires that the input be in the following 2 formats:
 			}
 		}
 
-	- There can be many JSONs listed in a row:
+- There can be many JSONs listed in a row:
 	{"first":"value"}
 	{"second":"value"}
 
-	- The program will generate output via commands in the input
-	  the format of these commands is:
+- The program will generate output via commands in the input
+  the format of these commands is:
 
 	__keyName__ **opt**( *Dot Operator* __KeyName__ )
 
-	example:
+- example:
 
 	apples.size
 
