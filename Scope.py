@@ -4,7 +4,7 @@ class Scope(object):
 		self.__scope_name = name
 		self.__symbols = {}
 		self.__scope = enclosing_scope
-		self.__object_stack = list()
+		self._objects = list()
 
 	def __str__(self):
 		return "scope: " + str(self.__scope_name)
@@ -18,7 +18,7 @@ class Scope(object):
 		self.__symbols[symbol.name()] = symbol
 
 		if symbol.is_object():
-			self.__object_stack.append(symbol)
+			self._objects.append(symbol)
 
 	def resolve(self, symbol_name):
 		resolved_symbol = self.__symbols.get(symbol_name)
@@ -34,12 +34,17 @@ class Scope(object):
 		pass
 
 	def contains_objects(self):
-		return len(self.__object_stack) > 0
+		return len(self._objects) > 0
 		pass
 
 	def pop_object(self):
-		return self.__object_stack.pop()
+		return self._objects.pop()
 		pass
 
 	def peek_object(self):
-		return self.__object_stack[len(self.__object_stack) - 1]
+		return self._objects[len(self._objects) - 1]
+
+	#should have been doing this since the beginning...
+	@property
+	def objects(self):
+		return self._objects

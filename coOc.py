@@ -74,15 +74,15 @@ def parse_tokens_queue(token, q, map_word_count, map_co_oc):
 
 		if token in map_co_oc[token_iter]:
 			current_token_count = map_co_oc[token_iter][token]
+
 		if token_iter in map_co_oc[token]:
 			iter_token_count = map_co_oc[token][token_iter]
+			
 		if map_word_count[token_iter] > map_word_count[token]:
 			map_co_oc[token_iter][token] = current_token_count + 1
 			map_co_oc[token][token_iter] = iter_token_count + 1
 
 def save_co_ocs(desired_tokens, map_word_count, map_co_oc):
-	#pprint.pprint(map_co_oc, width = 1)
-
 	token_left = desired_tokens.get_next_token()
 	token_right = desired_tokens.get_next_token()
 	count_numerator = count_denominator = 0

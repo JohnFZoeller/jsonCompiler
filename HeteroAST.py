@@ -180,14 +180,13 @@ class CommandNode(ValueNode):
 					int_symbol = self._children[i]._declare(self._scope)
 
 					if int_symbol:
-						self.__get_array_element(self._symbol, 
-																		 int_symbol.name())
+						self.__get_array_element(self._symbol, int_symbol.name())
 
 				if len(self._children) == 1:
 					print("Result: " + str(self._symbol.get().name()))
+					return
 			else:
 				print("Failed to resolve: " + str(cmd_name))
-
 		else:
 			print("Scope Storage Error")
 
@@ -196,6 +195,10 @@ class CommandNode(ValueNode):
 		print("Result: " + str(key_value_symbol.get().
 					get_array_element(idx).name()))
 
+	def temp(self):
+		for obj in self._scope.objects:
+			temp_scope = obj
+			self._symbol = temp_scope.resolve(cmd_name)
 
 
 
