@@ -42,6 +42,9 @@ Note that my code does not yet strictly implement this language as I am still bu
 
 Also, a JSON must be listed BEFORE any Statement that references its keys. 
 
+Conflicting key values will resolve to the most recent inputted JSON
+(although I'm working on a better solution to that).
+
 ## Running the program
 ##### Without Token Co-occurrence
 All files should be in the same directory. Example name: ~/Desktop/jsOnject/
@@ -52,14 +55,43 @@ In the simplest case...
     ./Main.py input.txt
     
 Where input.txt contains a series of JSONs and Commands. 
-Given the above examples as input, the output should be. 
+Given the above examples as input, the output should be:  
 
-    
-    
+    placeholder
 
 ##### With Token Co-occurrence
+By providing a second input file via that command line, token co-occurrence will
+be calculated.  For a full description of Token Co-occurrence, see the next Section. 
 
+    ./Main input.txt tokenList.txt
+
+The second input file (tokenList.txt above) must be in the following form.
+
+    Token \s Token \n
+    Token \s Token \n etc...
+    
+Standard JSON operators such as a ":", or a ",", can be simply typed as they are,
+while Strings will be represented as "" (two consecutive quotes). Ints, booleans,
+nulls should be typed out with arbitrary values.  An example of all this would
+be:
+
+    , :
+    : ""
+    { 45
+    ] null
+    null true
 
 ## Token Co-occurrence
+
+Token Co-occurrence is the likelihood that a token (A) will appear within
+K tokens of another token (B) in the inputted JSON. For the immediate future,
+my program will predetermine K to be 3, although an arbitrary K will be 
+implemented soon.  Therefore, an example of the Token co-occurrence would be:
+
+    placeholder
+    
+
+
+
 
 
