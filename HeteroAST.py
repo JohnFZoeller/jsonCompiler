@@ -71,7 +71,9 @@ class PairNode(HeteroAST):
 
 	def _declare(self, enclosing_scope):
 		self._scope = enclosing_scope
+
 		key_node, val_node = 0, 1
+
 
 		key_symbol = self._children[key_node]._declare(self._scope, True)
 		val_symbol = self._children[val_node]._declare(self._scope)
@@ -166,34 +168,82 @@ class CommandNode(ValueNode):
 	def __init__(self, token):
 		super(CommandNode, self).__init__(token)
 
-	def _declare(self, enclosing_scope):
+	def _resolve_command(self, enclosing_scope):
+		#print("resolve command  called")
 		self._scope = enclosing_scope
 		cmd_node = 0
 		cmd_name = self._children[cmd_node]._token.value()
+
 
 		if self._scope.contains_objects():
 			self._scope = self._scope.peek_object()
 			self._symbol = self._scope.resolve(cmd_name)
 
 			if self._symbol:
+
+				
 				for i in range(1, len(self._children)):
-					int_symbol = self._children[i]._declare(self._scope)
+					child_symbol = self._children[i]._declare(self._scope)
 
-					if int_symbol:
-						self.__get_array_element(self._symbol, int_symbol.name())
+					#if is array symbol
+					if not self._is_command_symbol(child_symbol):
+						self.__print_array_element(self._symbol, child_symbol.name())
 
-				if len(self._children) == 1:
-					print("Result: " + str(self._symbol.get().name()))
-					return
+
+				#if theres only one child, the for loop never executes
+				if self._is_value_symbol(self._symbol):
+					print("Result: " + str(self._symbol.get_value_symbol().name()))
+					return self._symbol
+					#return self._symbol
 			else:
 				print("Failed to resolve: " + str(cmd_name))
 		else:
 			print("Scope Storage Error")
 
+	def _declare(self, enclosing_scope):
+		self._resolve_command(enclosing_scope)
+		# self._scope = enclosing_scope
+		# cmd_node = 0
+		# cmd_name = self._children[cmd_node]._token.value()
 
-	def __get_array_element(self, key_value_symbol, idx):
-		print("Result: " + str(key_value_symbol.get().
+
+		# if self._scope.contains_objects():
+		# 	self._scope = self._scope.peek_object()
+		# 	self._symbol = self._scope.resolve(cmd_name)
+
+		# 	if self._symbol:
+		# 		#skips cmd_node, check if symbol 
+		# 		for i in range(1, len(self._children)):
+		# 			idx_symbol = self._children[i]._declare(self._scope)
+
+		# 			if idx_symbol:
+		# 				self.__print_array_element(self._symbol, idx_symbol.name())
+
+		# 		if len(self._children) == 1:
+		# 			print("Result: " + str(self._symbol.get().name()))
+		# 			return
+		# 	else:
+		# 		print("Failed to resolve: " + str(cmd_name))
+		# else:
+		# 	print("Scope Storage Error")
+
+
+	def __print_array_element(self, key_value_symbol, idx):
+		print("Result: " + str(key_value_symbol.get_value_symbol().
 					get_array_element(idx).name()))
+
+	def _is_command_symbol(self, symbol):
+		if symbol:
+			if (symbol.type().__class__.__name__ == "BuiltInTypeSymbol"):
+				return False
+			return True
+		return True
+
+	def _is_value_symbol(self, symbol):
+		return len(self._children) == 1
+		#need to implement check for whether the symbol is 
+		#actually a value symbol of a keyValuesymbol
+		#this is a cheat
 
 	def temp(self):
 		for obj in self._scope.objects:

@@ -33,6 +33,7 @@ class Scope(object):
 		return self.__scope_name
 		pass
 
+	#@deprecated
 	def contains_objects(self):
 		return len(self._objects) > 0
 		pass
