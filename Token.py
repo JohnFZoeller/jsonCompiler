@@ -31,6 +31,7 @@ class Token(object):
 	def copy(self):
 		return Token(self.__type, self.__value)
 
+	#@property
 	def type(self):
 		return self.__type
 

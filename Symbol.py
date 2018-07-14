@@ -18,7 +18,8 @@ class Symbol(object):
 	def is_object(self):
 		return False
 
-	def get_value_symbol(self):
+	@property
+	def value_symbol(self):
 		return None
 
 class BuiltInTypeSymbol(Symbol):
@@ -69,7 +70,8 @@ class KeyValueSymbol(Symbol):
 		super(KeyValueSymbol, self).__init__(name, type)
 		self.__value_symbol = value_symbol
 
-	def get_value_symbol(self):
+	@property
+	def value_symbol(self):
 		return self.__value_symbol
 
 

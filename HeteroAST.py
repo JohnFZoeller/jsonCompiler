@@ -15,10 +15,10 @@ class HeteroAST(object):
 		pass
 
 	def print_tree(self, level):
-		#print(level + self.__class__.__name__)
+		print(level + self.__class__.__name__ + ": CLASS")
 
 		for c in self._children:
-			if c._token == None:
+			if not c._token:
 				c.print_tree(level + '++')
 			else:
 				print(level + str(c._token))
@@ -31,11 +31,14 @@ class HeteroAST(object):
 		print("no implementation")
 		pass
 
+	def _has_one_child(self):
+		return len(self._children) == 1
+
 	def _has_children(self):
 		return len(self._children) > 0
 		pass
 
-	def _has_more_children(self):
+	def _has_two_children(self):
 		return len(self._children) == 2
 		pass
 
@@ -62,7 +65,7 @@ class MembersNode(HeteroAST):
 
 		self._children[pair_node]._declare(self._scope)
 
-		if self._has_more_children():
+		if self._has_two_children():
 			self._children[mems_node]._declare(self._scope)
 
 class PairNode(HeteroAST):
@@ -95,8 +98,7 @@ class ArrayNode(HeteroAST):
 		elems_node = 0
 
 		if self._has_children():
-			self._children[elems_node]._declare(self._scope,
-																					self._symbol)
+			self._children[elems_node]._declare(self._scope, self._symbol)
 
 		return self._symbol
 
@@ -111,10 +113,8 @@ class ElementsNode(HeteroAST):
 		elem = self._children[value_node]._declare(self._scope)
 		array_symbol.append(elem)
 
-		if self._has_more_children():
-			self._children[elems_node]._declare(self._scope,
-																					array_symbol)
-
+		if self._has_two_children():
+			self._children[elems_node]._declare(self._scope, array_symbol)
 
 class ValueNode(HeteroAST):
 	def __init__(self, token):
@@ -165,36 +165,32 @@ class NullNode(BuiltInTypeNode):
 
 
 class CommandNode(ValueNode):
+	"""A CommandNode has at most 2 children: a cmd_node(its name)
+	and either an int node, another command (or nothing)"""
+
 	def __init__(self, token):
 		super(CommandNode, self).__init__(token)
 
 	def _resolve_command(self, enclosing_scope):
-		#print("resolve command  called")
 		self._scope = enclosing_scope
-		cmd_node = 0
-		cmd_name = self._children[cmd_node]._token.value()
-
+		cmd_node_idx, child_node_idx = 0, 1
+		cmd_name = self._children[cmd_node_idx]._token.value()
 
 		if self._scope.contains_objects():
 			self._scope = self._scope.peek_object()
 			self._symbol = self._scope.resolve(cmd_name)
 
 			if self._symbol:
+				if self._has_one_child():
+					self._print_value_symbol()
+				else:
+					child_node = self._children[child_node_idx]
 
-				
-				for i in range(1, len(self._children)):
-					child_symbol = self._children[i]._declare(self._scope)
-
-					#if is array symbol
-					if not self._is_command_symbol(child_symbol):
-						self.__print_array_element(self._symbol, child_symbol.name())
-
-
-				#if theres only one child, the for loop never executes
-				if self._is_value_symbol(self._symbol):
-					print("Result: " + str(self._symbol.get_value_symbol().name()))
-					return self._symbol
-					#return self._symbol
+					if self._is_int_node(child_node):
+						int_symbol = child_node._declare(self._scope)
+						self._print_array_element(self._symbol, int_symbol.name())
+					else:
+						child_node._resolve_command(self._scope)
 			else:
 				print("Failed to resolve: " + str(cmd_name))
 		else:
@@ -202,54 +198,33 @@ class CommandNode(ValueNode):
 
 	def _declare(self, enclosing_scope):
 		self._resolve_command(enclosing_scope)
-		# self._scope = enclosing_scope
-		# cmd_node = 0
-		# cmd_name = self._children[cmd_node]._token.value()
 
+	def _print_value_symbol(self):
+		print("Result: " + str(self._symbol.value_symbol.name()))
 
-		# if self._scope.contains_objects():
-		# 	self._scope = self._scope.peek_object()
-		# 	self._symbol = self._scope.resolve(cmd_name)
+	def _print_array_element(self, key_value_symbol, idx):
+		print("Result: " + str(key_value_symbol.value_symbol.
+			get_array_element(idx).name()))
 
-		# 	if self._symbol:
-		# 		#skips cmd_node, check if symbol 
-		# 		for i in range(1, len(self._children)):
-		# 			idx_symbol = self._children[i]._declare(self._scope)
-
-		# 			if idx_symbol:
-		# 				self.__print_array_element(self._symbol, idx_symbol.name())
-
-		# 		if len(self._children) == 1:
-		# 			print("Result: " + str(self._symbol.get().name()))
-		# 			return
-		# 	else:
-		# 		print("Failed to resolve: " + str(cmd_name))
-		# else:
-		# 	print("Scope Storage Error")
-
-
-	def __print_array_element(self, key_value_symbol, idx):
-		print("Result: " + str(key_value_symbol.get_value_symbol().
-					get_array_element(idx).name()))
-
-	def _is_command_symbol(self, symbol):
-		if symbol:
-			if (symbol.type().__class__.__name__ == "BuiltInTypeSymbol"):
-				return False
-			return True
-		return True
-
-	def _is_value_symbol(self, symbol):
-		return len(self._children) == 1
-		#need to implement check for whether the symbol is 
-		#actually a value symbol of a keyValuesymbol
-		#this is a cheat
+	def _is_int_node(self, symbol):
+		return symbol.__class__.__name__ == "IntNode"
 
 	def temp(self):
-		for obj in self._scope.objects:
-			temp_scope = obj
-			self._symbol = temp_scope.resolve(cmd_name)
+		symbol_resolved = False
 
+		for obj_scope in self._scope.objects:
+			self._symbol = self._scope.resolve(cmd_name)
+
+			if not self._symbol:
+				continue
+			else:
+				symbol_resolved = True
+				pass
+				#rest of code
+				pass
+
+		if not symbol_resolved:
+			print("Failed to resolve: " + str(cmd_name))
 
 
 

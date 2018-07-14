@@ -18,15 +18,18 @@ class Scope(object):
 		self.__symbols[symbol.name()] = symbol
 
 		if symbol.is_object():
-			self._objects.append(symbol)
+			#you want the most recent objects to resolve first
+			self._objects.insert(0, symbol)
 
 	def resolve(self, symbol_name):
 		resolved_symbol = self.__symbols.get(symbol_name)
 
 		if resolved_symbol:
 			return resolved_symbol
-		if self.__scope:
-			return self.__scope.resolve(symbol_name)
+		# if self.__scope:
+		# 	return self.__scope.resolve(symbol_name)
+		#doesnt apply here
+		#you wouldent want address.address to resolve...
 		return None
 
 	def scope_name(self):
@@ -43,7 +46,7 @@ class Scope(object):
 		pass
 
 	def peek_object(self):
-		return self._objects[len(self._objects) - 1]
+		return self._objects[0]
 
 	#should have been doing this since the beginning...
 	@property
