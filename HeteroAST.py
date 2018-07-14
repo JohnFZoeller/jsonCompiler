@@ -177,6 +177,7 @@ class CommandNode(ValueNode):
 		cmd_name = self._children[cmd_node_idx]._token.value()
 
 		if self._scope.contains_objects():
+			# self.temp()
 			self._scope = self._scope.peek_object()
 			self._symbol = self._scope.resolve(cmd_name)
 
@@ -211,6 +212,8 @@ class CommandNode(ValueNode):
 
 	def temp(self):
 		symbol_resolved = False
+		cmd_node_idx, child_node_idx = 0, 1
+		cmd_name = self._children[cmd_node_idx]._token.value()
 
 		for obj_scope in self._scope.objects:
 			self._symbol = self._scope.resolve(cmd_name)
@@ -219,9 +222,16 @@ class CommandNode(ValueNode):
 				continue
 			else:
 				symbol_resolved = True
-				pass
-				#rest of code
-				pass
+				if self._has_one_child():
+					self._print_value_symbol()
+				else:
+					child_node = self._children[child_node_idx]
+
+					if self._is_int_node(child_node):
+						int_symbol = child_node._declare(self._scope)
+						self._print_array_element(self._symbol, int_symbol.name())
+					else:
+						child_node.temp()
 
 		if not symbol_resolved:
 			print("Failed to resolve: " + str(cmd_name))

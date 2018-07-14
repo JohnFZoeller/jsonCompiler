@@ -10,6 +10,14 @@ class Scope(object):
 		return "scope: " + str(self.__scope_name)
 		pass
 
+	@property
+	def scope_name(self):
+		return self.__scope_name
+	
+	@property
+	def objects(self):
+		return self._objects
+
 	def build_global(self, built_ins):
 		self.__symbols = {sym.name() : sym for sym in built_ins}
 		pass
@@ -47,8 +55,3 @@ class Scope(object):
 
 	def peek_object(self):
 		return self._objects[0]
-
-	#should have been doing this since the beginning...
-	@property
-	def objects(self):
-		return self._objects

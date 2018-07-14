@@ -34,7 +34,7 @@ class BuiltInTypeSymbol(Symbol):
 class ObjectSymbol(Symbol, Scope):
 	def __init__(self, enclosing_scope):
 		Symbol.__init__(self)
-		scope_name = self.make_name(enclosing_scope.scope_name())
+		scope_name = self.make_name(enclosing_scope.scope_name)
 		Scope.__init__(self, scope_name, enclosing_scope)
 
 	def is_object(self):
@@ -62,7 +62,6 @@ class ArraySymbol(Symbol):
 
 	def get_array_element(self, idx):
 		return self.__elements[int(idx)]
-
 
 
 class KeyValueSymbol(Symbol):
