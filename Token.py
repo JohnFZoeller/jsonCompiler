@@ -10,34 +10,36 @@ class Token(object):
 		self.__type = token_type
 		self.__value = value
 
-	#replaces str
+	#replaces str, needed so that I can hash 
 	def __repr__(self):
-		typeName = self.Token_Type(self.__type.value).name
-		return "[" + typeName + "] -> " + self.__value + ""
+		# FIXME: <totally unreadable>
+		typeName = self.Token_Type(self.type.value).name
+		return "[" + typeName + "] -> " + self.value + ""
 
 	def __eq__(self, other):
 		if self.__type != Token.Token_Type.OPERATOR:
 			return True
-		return ((self.__type, self.__value) ==
-					 (other.__type, other.__value))
+		return ((self.type, self.value) ==
+					 (other.type, other.value))
 
 	def __hash__(self):
-		hash_tuple = ((self.__type) 
-			if self.__type != self.Token_Type.OPERATOR 
-			else (self.__type, self.__value))
+		hash_tuple = ((self.type) 
+			if self.type != self.Token_Type.OPERATOR 
+			else (self.type, self.value))
 
 		return hash(hash_tuple)
 
 	def copy(self):
-		return Token(self.__type, self.__value)
+		return Token(self.type, self.value)
 
-	#@property
+	@property
 	def type(self):
 		return self.__type
 
+	@property
 	def value(self):
 		return self.__value
 
 	def is_eof(self):
-		return self.__type == self.Token_Type.EOF
+		return self.type == self.Token_Type.EOF
 

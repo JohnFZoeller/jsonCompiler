@@ -33,7 +33,7 @@ The program will generate output via command statements in the input, the format
 
 examples:
 
-    apples
+    second
 	apples.size
     key2[0]
 
@@ -42,8 +42,8 @@ Note that my code does not yet strictly implement this language as I am still bu
 
 Also, a JSON must be listed BEFORE any Statement that references its keys. 
 
-Conflicting key values will resolve to the most recent inputted JSON
-(although I'm working on a better solution to that).
+If a Key is present in multiple JSONs, all of the values associated with that key
+will be printed in order of most recently created JSON.
 
 ## Running the program
 ##### Without Token Co-occurrence
@@ -57,7 +57,10 @@ In the simplest case...
 Where input.txt contains a series of JSONs and Commands. 
 Given the above examples as input, the output should be:  
 
-    placeholder
+    No Co-Occurrence input
+    Result: value
+    Result: 0
+    Result: 1
 
 ##### With Token Co-occurrence
 By providing a second input file via that command line, token co-occurrence will

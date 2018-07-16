@@ -2,25 +2,27 @@ from Scope import Scope
 
 class Symbol(object):
 	def __init__(self, name = None, s_type = None):
-		self.__name = name if name else id(self)
+		self.__name = name if name else "Object at -> " + str(id(self))
 		self.__type = s_type
 
 	def __str__(self):
 		return ("Name: " + str(self.__name) + " Type: "+
 		 	str(self.__type))
 
+	@property
 	def name(self):
 		return self.__name
 
+	@property
 	def type(self):
 		return self.__type
-
-	def is_object(self):
-		return False
 
 	@property
 	def value_symbol(self):
 		return None
+
+	def is_object(self):
+		return False
 
 class BuiltInTypeSymbol(Symbol):
 	def __init__(self, name):
@@ -28,7 +30,7 @@ class BuiltInTypeSymbol(Symbol):
 			self.__class__)
 
 	def __str__(self):
-		return "BuiltIn(" + str(self.name()) + ")"
+		return "BuiltIn(" + str(self.name) + ")"
 		
 
 class ObjectSymbol(Symbol, Scope):
@@ -42,7 +44,7 @@ class ObjectSymbol(Symbol, Scope):
 
 	def make_name(self, enclosing_scope_name):
 		return (str(enclosing_scope_name) + " : " + 
-			str(self.name()))
+			str(self.name))
 
 class ArraySymbol(Symbol):
 	def __init__(self):

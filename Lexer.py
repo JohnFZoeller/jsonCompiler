@@ -1,8 +1,5 @@
 from Token import Token
 
-"""
-"""
-
 class Lexer(object):
 	#public static
 	ops = {'{', '}', ':', ',', '.','[', ']'}

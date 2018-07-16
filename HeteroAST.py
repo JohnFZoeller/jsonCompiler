@@ -54,6 +54,7 @@ class ObjectNode(HeteroAST):
 			self._children[mems_node]._declare(self._scope)
 
 		enclosing_scope.define(self._symbol)
+		return self._symbol
 
 class MembersNode(HeteroAST):
 	def __init__(self):
@@ -74,15 +75,13 @@ class PairNode(HeteroAST):
 
 	def _declare(self, enclosing_scope):
 		self._scope = enclosing_scope
-
 		key_node, val_node = 0, 1
-
 
 		key_symbol = self._children[key_node]._declare(self._scope, True)
 		val_symbol = self._children[val_node]._declare(self._scope)
-		key_name, key_type = key_symbol.name(), key_symbol.type()
+		key_name, key_type = key_symbol.name, key_symbol.type
 
-		# print("SCOPE: " + str(self._scope.scope_name()))
+		# print("SCOPE: " + str(self._scope.scope_name))
 		# print('\t' + str(key_symbol) + '\n\t' + str(val_symbol))
 
 		self._symbol = KeyValueSymbol(key_name, key_type, val_symbol)
@@ -126,8 +125,8 @@ class BuiltInTypeNode(ValueNode):
 
 	def _declare(self, enclosing_scope):
 		self._scope = enclosing_scope
-		value = self._token.value()
-		type = self._scope.resolve(self._token.type().name)
+		value = self._token.value
+		type = self._scope.resolve(self._token.type.name)
 		self._symbol = Symbol(value, type)
 		return self._symbol
 
@@ -137,8 +136,8 @@ class StringNode(BuiltInTypeNode):
 
 	def _declare(self, enclosing_scope, is_key = False):
 		self._scope = enclosing_scope
-		token_name = self._token.value()
-		token_type = self._token.type().name
+		token_name = self._token.value
+		token_type = self._token.type.name
 		symbol_type = self._scope.resolve(token_type)
 
 		if is_key:
@@ -172,51 +171,13 @@ class CommandNode(ValueNode):
 		super(CommandNode, self).__init__(token)
 
 	def _resolve_command(self, enclosing_scope):
-		self._scope = enclosing_scope
-		cmd_node_idx, child_node_idx = 0, 1
-		cmd_name = self._children[cmd_node_idx]._token.value()
-
-		if self._scope.contains_objects():
-			# self.temp()
-			self._scope = self._scope.peek_object()
-			self._symbol = self._scope.resolve(cmd_name)
-
-			if self._symbol:
-				if self._has_one_child():
-					self._print_value_symbol()
-				else:
-					child_node = self._children[child_node_idx]
-
-					if self._is_int_node(child_node):
-						int_symbol = child_node._declare(self._scope)
-						self._print_array_element(self._symbol, int_symbol.name())
-					else:
-						child_node._resolve_command(self._scope)
-			else:
-				print("Failed to resolve: " + str(cmd_name))
-		else:
-			print("Scope Storage Error")
-
-	def _declare(self, enclosing_scope):
-		self._resolve_command(enclosing_scope)
-
-	def _print_value_symbol(self):
-		print("Result: " + str(self._symbol.value_symbol.name()))
-
-	def _print_array_element(self, key_value_symbol, idx):
-		print("Result: " + str(key_value_symbol.value_symbol.
-			get_array_element(idx).name()))
-
-	def _is_int_node(self, symbol):
-		return symbol.__class__.__name__ == "IntNode"
-
-	def temp(self):
 		symbol_resolved = False
 		cmd_node_idx, child_node_idx = 0, 1
-		cmd_name = self._children[cmd_node_idx]._token.value()
+		cmd_name = self._children[cmd_node_idx]._token.value
+		self._scope = enclosing_scope
 
 		for obj_scope in self._scope.objects:
-			self._symbol = self._scope.resolve(cmd_name)
+			self._symbol = obj_scope.resolve(cmd_name)
 
 			if not self._symbol:
 				continue
@@ -229,30 +190,26 @@ class CommandNode(ValueNode):
 
 					if self._is_int_node(child_node):
 						int_symbol = child_node._declare(self._scope)
-						self._print_array_element(self._symbol, int_symbol.name())
+						self._print_array_element(self._symbol, int_symbol.name)
 					else:
-						child_node.temp()
+						child_node._resolve_command(obj_scope)
 
 		if not symbol_resolved:
 			print("Failed to resolve: " + str(cmd_name))
 
 
+	def _declare(self, enclosing_scope):
+		self._resolve_command(enclosing_scope)
 
+	def _print_value_symbol(self):
+		print("Result: " + str(self._symbol.value_symbol.name))
 
+	def _print_array_element(self, key_value_symbol, idx):
+		print("Result: " + str(key_value_symbol.value_symbol.
+			get_array_element(idx).name))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+	def _is_int_node(self, node):
+		return isinstance(node, IntNode)
 
 
 

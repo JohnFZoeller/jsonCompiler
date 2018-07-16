@@ -19,11 +19,11 @@ class Scope(object):
 		return self._objects
 
 	def build_global(self, built_ins):
-		self.__symbols = {sym.name() : sym for sym in built_ins}
+		self.__symbols = {sym.name : sym for sym in built_ins}
 		pass
 
 	def define(self, symbol):
-		self.__symbols[symbol.name()] = symbol
+		self.__symbols[symbol.name] = symbol
 
 		if symbol.is_object():
 			#you want the most recent objects to resolve first
@@ -40,11 +40,6 @@ class Scope(object):
 		#you wouldent want address.address to resolve...
 		return None
 
-	def scope_name(self):
-		return self.__scope_name
-		pass
-
-	#@deprecated
 	def contains_objects(self):
 		return len(self._objects) > 0
 		pass

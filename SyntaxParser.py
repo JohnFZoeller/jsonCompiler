@@ -23,14 +23,14 @@ class SyntaxParser(object):
 
 	def parse(self):
 		while not self.__token.is_eof():
-			if self.__token.type() == Token.Token_Type.COMMAND:
+			if self.__token.type == Token.Token_Type.COMMAND:
 				self.__Command()
-			elif (self.__token.type() == Token.Token_Type.OPERATOR
-				and self.__token.value() == '{'):
+			elif (self.__token.type == Token.Token_Type.OPERATOR
+				and self.__token.value == '{'):
 				self.__Object()
 			else:
 				raise ValueError('Unexpected Token: ' + 
-					self.__token.value())
+					self.__token.value)
 
 		#self.__root.print_tree('+')
 
@@ -40,7 +40,7 @@ class SyntaxParser(object):
 
 	"""HELPERS"""
 	def __match_operator(self, expect):
-		if self.__token.value() == expect:
+		if self.__token.value == expect:
 			self.__set_token()
 		else:
 			raise ValueError('Expected a : ' + expect + ' Got: ' +
@@ -50,7 +50,7 @@ class SyntaxParser(object):
 		value_node = self.__get_value_node(expect)
 		self.__curr_node.add_child(value_node)
 
-		if self.__token.type() == expect:
+		if self.__token.type == expect:
 			self.__set_token()
 		else:
 			raise ValueError('Expected a : ' + expect)
@@ -75,15 +75,15 @@ class SyntaxParser(object):
 
 	"""TOKEN CHECKS"""
 	def __has_members(self):
-		return self.__token.value() != '}'
+		return self.__token.value != '}'
 		pass
 
 	def __has_elements(self):
-		return self.__token.value() != ']'
+		return self.__token.value != ']'
 		pass
 
 	def __has_more_members(self):
-		return self.__token.value() == ','
+		return self.__token.value == ','
 		pass
 
 	def __is_basic_type(self, type):
@@ -126,8 +126,8 @@ class SyntaxParser(object):
 		self.__match(Token.Token_Type.STRING)
 		self.__match_operator(':')
 
-		value_type = self.__token.type()
-		operator = self.__token.value()
+		value_type = self.__token.type
+		operator = self.__token.value
 
 		if self.__is_basic_type(value_type):
 			self.__match(value_type)
@@ -155,8 +155,8 @@ class SyntaxParser(object):
 		temp_node = self.__curr_node
 		self.__curr_node = elems_node
 
-		value_type = self.__token.type()
-		operator = self.__token.value()
+		value_type = self.__token.type
+		operator = self.__token.value
 
 		if self.__is_basic_type(value_type):
 			self.__match(value_type)
@@ -177,10 +177,10 @@ class SyntaxParser(object):
 
 		self.__match(Token.Token_Type.COMMAND)
 
-		if self.__token.value() == '[':
+		if self.__token.value == '[':
 			self.__ArrayAccess()
 
-		if self.__token.value() == '.':
+		if self.__token.value == '.':
 			self.__match_operator('.')
 			self.__Command()
 
